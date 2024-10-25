@@ -7,6 +7,8 @@ const ResumePage = () => {
   const navigate = useNavigate();
   const [cv, setCV] = useState<{
     name?: string;
+    email?: string;
+    phone?: string;
     experience?: string;
     skills?: string;
   }>({});
@@ -25,11 +27,14 @@ const ResumePage = () => {
   return (
     <div>
       <h2>Resume for {cv.name}</h2>
+      <p>Email: {cv.email}</p>
+      <p>Phone: {cv.phone}</p>
       <p>Experience: {cv.experience}</p>
       <p>Skills: {cv.skills}</p>
       <button onClick={() => handleEdit("step1")}>Edit Step 1</button>
       <button onClick={() => handleEdit("step2")}>Edit Step 2</button>
       <button onClick={() => handleEdit("step3")}>Edit Step 3</button>
+      <button onClick={() => navigate("/cvs")}>Back to CV List</button>
     </div>
   );
 };

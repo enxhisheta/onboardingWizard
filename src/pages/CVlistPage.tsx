@@ -4,8 +4,10 @@ import { getCVs } from "../utils/localStorage";
 
 interface CV {
   name: string;
-  experience: string;
-  skills: string;
+  email?: string;
+  phone?: string;
+  experience?: string;
+  skills?: string;
 }
 
 const CVListPage = () => {
@@ -14,12 +16,11 @@ const CVListPage = () => {
   const [filterTerm, setFilterTerm] = useState("");
 
   useEffect(() => {
-    const storedCVs = getCVs() as CV[];
+    const storedCVs = getCVs();
     if (Array.isArray(storedCVs)) {
       setCVs(storedCVs);
       setFilteredCVs(storedCVs);
     }
-    console.log("Stored CVs:", storedCVs);
   }, []);
 
   const handleFilter = (criteria: string) => {
@@ -37,6 +38,9 @@ const CVListPage = () => {
   return (
     <div>
       <h2>All CVs</h2>
+      <Link to="/" className="link">
+        Go back to form
+      </Link>
       <input
         type="text"
         placeholder="Filter by name"
@@ -47,7 +51,7 @@ const CVListPage = () => {
         {filteredCVs.length > 0 ? (
           filteredCVs.map((cv, index) => (
             <li key={index}>
-              <Link to={`/resume/${index}`}>{cv.name}</Link>
+              <Link to={`/resume/${index}`}>{cv.name} </Link>
             </li>
           ))
         ) : (

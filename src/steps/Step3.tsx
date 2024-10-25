@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import FormStep from "../components/FormStep";
 
 const Step3 = () => {
-  const [skills, setSkills] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { cv, editing } = location.state || {};
+  const [skills, setSkills] = useState("");
 
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("cv") || "{}");
-    if (savedData.skills) {
-      setSkills(savedData.skills);
+    if (editing && cv?.skills) {
+      setSkills(cv.skills);
     }
-  }, []);
+  }, [cv, editing]);
 
   const handleNext = () => {
-    const cv = JSON.parse(localStorage.getItem("cv") || "{}");
-    cv.skills = skills;
-    const cvs = JSON.parse(localStorage.getItem("cvs") || "[]");
-    cvs.push(cv);
-    localStorage.setItem("cvs", JSON.stringify(cvs));
+    const updatedCV = { ...cv, skills };
+    const storedCVs = JSON.parse(localStorage.getItem("cvs") || "[]");
+    storedCVs.push(updatedCV);
+    localStorage.setItem("cvs", JSON.stringify(storedCVs));
     localStorage.removeItem("cv");
     navigate("/cvs");
   };

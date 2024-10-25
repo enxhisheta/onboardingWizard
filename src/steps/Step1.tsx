@@ -1,23 +1,28 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import FormStep from "../components/FormStep";
 
 const Step1 = () => {
-  const [name, setName] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { cv, editing } = location.state || {};
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("cv") || "{}");
-    if (savedData.name) {
-      setName(savedData.name);
+    if (editing && cv) {
+      setName(cv.name || "");
+      setEmail(cv.email || "");
+      setPhone(cv.phone || "");
     }
-  }, []);
+  }, [cv, editing]);
 
   const handleNext = () => {
-    const cv = JSON.parse(localStorage.getItem("cv") || "{}");
-    cv.name = name;
-    localStorage.setItem("cv", JSON.stringify(cv));
-    navigate("/step2");
+    const updatedCV = { ...cv, name, email, phone };
+    localStorage.setItem("cv", JSON.stringify(updatedCV));
+    navigate("/step2", { state: { cv: updatedCV } });
   };
 
   return (
@@ -30,6 +35,25 @@ const Step1 = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+          />
+        </label>
+        <label>
+          Email:
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+          />
+        </label>
+        <label>
+          Phone Number:
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Enter your phone number"
           />
         </label>
       </FormStep>
