@@ -21,7 +21,7 @@ const ResumePage = () => {
   }, [id]);
 
   const handleEdit = (step: string) => {
-    navigate(`/${step}`, { state: { cv, id, editing: true } });
+    navigate(`/${step}`, { state: { cv, id } });
   };
 
   return (

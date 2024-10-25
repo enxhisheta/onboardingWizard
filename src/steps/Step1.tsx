@@ -2,14 +2,21 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormStep from "../components/FormStep";
 
+interface CV {
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+}
+
 const Step1 = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cv, editing } = location.state || {};
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
 
   useEffect(() => {
     if (editing && cv) {
@@ -19,10 +26,35 @@ const Step1 = () => {
     }
   }, [cv, editing]);
 
+  const getNextId = (existingCVs: CV[]): number => {
+    if (existingCVs.length === 0) {
+      return 1;
+    }
+    return Math.max(...existingCVs.map((existingCV) => existingCV.id)) + 1;
+  };
+
   const handleNext = () => {
-    const updatedCV = { ...cv, name, email, phone };
-    localStorage.setItem("cv", JSON.stringify(updatedCV));
-    navigate("/step2", { state: { cv: updatedCV } });
+    const existingCVs: CV[] = JSON.parse(localStorage.getItem("cvs") || "[]");
+
+    const updatedCV: CV = {
+      id: cv ? cv.id : getNextId(existingCVs),
+      name,
+      email,
+      phone,
+    };
+
+    const cvIndex = existingCVs.findIndex(
+      (existingCV) => existingCV.id === cv?.id
+    );
+
+    if (cvIndex !== -1) {
+      existingCVs[cvIndex] = updatedCV;
+      localStorage.setItem("cvs", JSON.stringify(existingCVs));
+      navigate("/resume", { state: { cv: updatedCV } });
+    } else {
+      localStorage.setItem("cv", JSON.stringify(updatedCV));
+      navigate("/step2", { state: { cv: updatedCV } });
+    }
   };
 
   return (
@@ -50,7 +82,7 @@ const Step1 = () => {
         <label>
           Phone Number:
           <input
-            type="text"
+            type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Enter your phone number"
